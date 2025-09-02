@@ -4,13 +4,16 @@ import bcrypt from "bcryptjs";
 
 export const POST = async (req: Request) => {
   try {
-    const { email, password } = await req.json();
+    const { emailOrUsername, password } = await req.json();
 
     const client = await clientPromise;
     const db = client.db("test"); // kendi DB adını yazabilirsin
     const users = db.collection("users");
 
-    const user = await users.findOne({ email });
+    // Hem email hem username ile kontrol et
+    const user = await users.findOne({
+      $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
+    });
 
     if (!user) {
       return NextResponse.json(
@@ -29,14 +32,14 @@ export const POST = async (req: Request) => {
     }
 
     return NextResponse.json(
-      { message: "Giriş başarılı", user: { email: user.email, username: user.username } },
+      {
+        message: "Giriş başarılı",
+        user: { email: user.email, username: user.username },
+      },
       { status: 200 }
     );
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { message: "Sunucu hatası" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Sunucu hatası" }, { status: 500 });
   }
 };
