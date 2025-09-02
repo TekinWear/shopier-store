@@ -19,7 +19,7 @@ function TransitionProvider({ children }: { children: React.ReactNode }) {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.6 }}
-        className="relative min-h-screen bg-black text-white"
+        className="relative min-h-screen text-white"
       >
         {/* Logo Animasyonu */}
         <motion.div
