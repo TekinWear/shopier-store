@@ -1,54 +1,53 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import clientPromise from "../../lib/mongodb";
 import bcrypt from "bcryptjs";
 
-export async function POST(req: Request) {
+export const POST = async (req: Request) => {
   try {
-    const { username, email, password, phone } = await req.json();
+    const { email, password, username, phone } = await req.json();
 
-    // Alan kontrolü
-    if (!username || !email || !password || !phone) {
+    if (!email || !password) {
       return NextResponse.json(
-        { error: "Tüm alanlar zorunlu!" },
+        { error: "E-posta ve şifre zorunludur!" },
         { status: 400 }
       );
     }
 
-    // DB bağlantısı
     const client = await clientPromise;
-    const db = client.db("shopierdb");
+    const db = client.db("shopierDB");
     const users = db.collection("users");
 
-    // Email zaten kayıtlı mı?
+    // kullanıcı var mı kontrol
     const existingUser = await users.findOne({ email });
     if (existingUser) {
       return NextResponse.json(
-        { error: "Bu email zaten kayıtlı." },
+        { error: "Bu e-posta ile zaten kayıtlı kullanıcı var!" },
         { status: 400 }
       );
     }
 
-    // Şifreyi hashle
+    // şifreyi hashle
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Kullanıcı ekle
+    // yeni kullanıcı kaydet
     await users.insertOne({
-      username,
       email,
       password: hashedPassword,
+      username,
       phone,
       createdAt: new Date(),
     });
 
     return NextResponse.json(
-      { message: "Kayıt başarılı ✅" },
+      { message: "Kayıt başarılı!" },
       { status: 201 }
     );
-  } catch (error) {
-    console.error(error);
+
+  } catch (error: any) {
+    console.error("Register Error:", error);
     return NextResponse.json(
-      { error: "Bir hata oluştu ❌" },
+      { error: error.message || "Bir hata oluştu!" },
       { status: 500 }
     );
   }
-}
+};

@@ -1,11 +1,9 @@
 import { MongoClient } from "mongodb";
 
 const uri = process.env.MONGODB_URI as string;
-const options = {};
+if (!uri) throw new Error("MONGODB_URI .env dosyasında bulunamadı");
 
-if (!uri) {
-  throw new Error("MONGODB_URI .env dosyasında tanımlı değil!");
-}
+const options = {};
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;

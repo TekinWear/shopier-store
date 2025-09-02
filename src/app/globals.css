@@ -28,3 +28,21 @@ body {
   @apply bg-gradient-to-b from-purple-900 via-purple-800 to-purple-950 text-white;
   min-height: 100vh;
 }
+/* ----- Animated gradient background ----- */
+.bg-animated {
+  background: linear-gradient(120deg, #1a0933, #3b0c59, #1f1147, #3f0ea0);
+  background-size: 300% 300%;
+  animation: tg-gradient 18s ease infinite;
+}
+@keyframes tg-gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ----- Soft grid overlay ----- */
+.bg-grid {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 26px 26px;
+  opacity: 0.5;
+}

@@ -3,20 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-type FormState = {
-  username: string;
+type LoginForm = {
   email: string;
   password: string;
-  phone?: string;
 };
 
-export default function SignupPage() {
-  const [form, setForm] = useState<FormState>({
-    username: "",
-    email: "",
-    password: "",
-    phone: "",
-  });
+export default function LoginPage() {
+  const [form, setForm] = useState<LoginForm>({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const router = useRouter();
@@ -30,23 +23,25 @@ export default function SignupPage() {
     e.preventDefault();
     setMsg(null);
     setLoading(true);
+
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data?.error || "Hata oluştu");
+      if (!res.ok) throw new Error(data?.error || "Hatalı giriş");
 
-      setMsg(data?.message || "Kayıt başarılı ✅");
-      setForm({ username: "", email: "", password: "", phone: "" });
+      setMsg(data?.message || "Giriş başarılı ✅");
+      setForm({ email: "", password: "" });
 
-      // ✅ Kayıt başarılıysa 2 saniye sonra login sayfasına yönlendir
+      // ✅ Başarılı girişten sonra ürünler sayfasına yönlendir
       setTimeout(() => {
-        router.push("/login");
-      }, 2000);
+        router.push("/products");
+      }, 1500);
     } catch (err: any) {
       setMsg(err?.message || "Bir hata oluştu ❌");
     } finally {
@@ -56,7 +51,6 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-[100vh] bg-animated relative">
-      {/* Yumuşak grid efektli overlay */}
       <div className="absolute inset-0 bg-grid pointer-events-none" />
 
       <main className="container mx-auto px-4 py-16 flex flex-col items-center">
@@ -72,34 +66,16 @@ export default function SignupPage() {
           TEKİN WEAR
         </h1>
 
-        {/* Form kartı */}
+        {/* Login formu */}
         <form
           onSubmit={handleSubmit}
           className="w-full max-w-md bg-black/55 backdrop-blur-sm rounded-2xl shadow-xl p-6 space-y-4 text-white"
         >
-          {/* Kullanıcı adı */}
-          <div>
-            <label className="block mb-1 text-sm text-white/85">
-              Kullanıcı Adı
-            </label>
-            <input
-              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none 
-              focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
-              type="text"
-              name="username"
-              value={form.username}
-              onChange={handleChange}
-              placeholder="ör. tekinwear"
-              required
-            />
-          </div>
-
           {/* Email */}
           <div>
             <label className="block mb-1 text-sm text-white/85">Email</label>
             <input
-              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none 
-              focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
+              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
               type="email"
               name="email"
               value={form.email}
@@ -113,8 +89,7 @@ export default function SignupPage() {
           <div>
             <label className="block mb-1 text-sm text-white/85">Şifre</label>
             <input
-              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none 
-              focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
+              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
               type="password"
               name="password"
               value={form.password}
@@ -124,32 +99,16 @@ export default function SignupPage() {
             />
           </div>
 
-          {/* Telefon (opsiyonel) */}
-          <div>
-            <label className="block mb-1 text-sm text-white/85">Telefon</label>
-            <input
-              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none 
-              focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
-              type="tel"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              placeholder="05xx xxx xx xx"
-            />
-          </div>
-
           {/* Mesaj */}
-          {msg && (
-            <p className="text-center text-sm opacity-90 pt-1">{msg}</p>
-          )}
+          {msg && <p className="text-center text-sm opacity-90 pt-1">{msg}</p>}
 
-          {/* Buton */}
+          {/* Giriş butonu */}
           <button
             disabled={loading}
             className="w-full rounded-lg bg-white text-black font-semibold py-2 disabled:opacity-60"
             type="submit"
           >
-            {loading ? "Gönderiliyor..." : "Kayıt Ol"}
+            {loading ? "Giriş Yapılıyor..." : "Giriş Yap"}
           </button>
         </form>
       </main>
