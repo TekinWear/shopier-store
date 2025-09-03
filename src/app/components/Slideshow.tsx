@@ -1,6 +1,8 @@
-const IMAGES = ["/model1.jpg", "/model2.jpg", "/model3.jpg"] as const;
+"use client";
 
 import { useState, useEffect } from "react";
+
+const IMAGES = ["/model1.jpg", "/model2.jpg", "/model3.jpg"] as const;
 
 export default function Slideshow() {
   const [current, setCurrent] = useState(0);
@@ -9,13 +11,17 @@ export default function Slideshow() {
     const t = setInterval(() => {
       setCurrent((p) => (p + 1) % IMAGES.length);
     }, 3500);
+
     return () => clearInterval(t);
   }, []);
 
   return (
-   <section className="relative w-full bg-purple-900">
+    <section className="relative w-full bg-black">
+      {/* Üst siyah alan */}
+      <div className="w-full h-16 bg-black"></div>
+
       {/* Slides */}
-      <div className="relative w-full h-[90vh] overflow-hidden">
+      <div className="relative w-full h-[calc(100vh-8rem)] overflow-hidden">
         {IMAGES.map((src, i) => (
           <img
             key={src}
@@ -28,6 +34,22 @@ export default function Slideshow() {
           />
         ))}
       </div>
+
+      {/* Dots */}
+      <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex space-x-2">
+        {IMAGES.map((_, i) => (
+          <span
+            key={i}
+            className={`h-3 w-3 rounded-full cursor-pointer ${
+              i === current ? "bg-white" : "bg-gray-500"
+            }`}
+            onClick={() => setCurrent(i)}
+          />
+        ))}
+      </div>
+
+      {/* Alt siyah alan */}
+      <div className="w-full h-16 bg-black"></div>
     </section>
   );
 }

@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
 import { FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import { useState } from "react";
 
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -15,58 +15,33 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-black">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between text-white">
-        
-        {/* Logo + Brand */}
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo.png"
-            alt="Tekin Wear Logo"
-            width={40}
-            height={40}
-          />
+          <Image src="/logo.png" alt="Tekin Wear Logo" width={40} height={40} />
           <span className="text-xl font-bold">Tekin Wear</span>
         </Link>
 
         {/* Menü */}
         <ul className="flex items-center gap-8">
-          {/* Ana Sayfa */}
           <li>
             <Link href="/" className="hover:text-gray-300 transition">
               Ana Sayfa
             </Link>
           </li>
 
-          {/* Hakkımızda */}
-          <li className="relative">
-            <span
-              onClick={() => toggleMenu("hakkimizda")}
-              className="cursor-pointer hover:text-gray-300 transition"
-            >
+          <li>
+            <Link href="/hakkimizda" className="hover:text-gray-300 transition">
               Hakkımızda
-            </span>
-            {openMenu === "hakkimizda" && (
-              <div className="absolute left-0 mt-2 bg-black text-white p-4 rounded-lg shadow-lg">
-                <p>Hakkımızda içeriği buraya gelecek</p>
-              </div>
-            )}
+            </Link>
           </li>
 
-          {/* Ürünler */}
-          <li className="relative">
-            <span
-              onClick={() => toggleMenu("urunler")}
-              className="cursor-pointer hover:text-gray-300 transition"
-            >
+          <li>
+            <Link href="/urunler" className="hover:text-gray-300 transition">
               Ürünler
-            </span>
-            {openMenu === "urunler" && (
-              <div className="absolute left-0 mt-2 bg-black text-white p-4 rounded-lg shadow-lg">
-                <p>Ürünler içeriği buraya gelecek</p>
-              </div>
-            )}
+            </Link>
           </li>
 
-          {/* İletişim */}
+          {/* İletişim (Dropdown) */}
           <li className="relative">
             <span
               onClick={() => toggleMenu("iletisim")}
@@ -74,13 +49,14 @@ export default function Navbar() {
             >
               İletişim
             </span>
+
             {openMenu === "iletisim" && (
               <div className="absolute left-0 mt-2 bg-black text-white p-4 rounded-lg shadow-lg w-64">
                 {/* WhatsApp */}
                 <Link
                   href="https://wa.me/905431080766"
                   target="_blank"
-                  className="flex items-center gap-2 hover:text-green-400 transition"
+                  className="flex items-center gap-2 hover:text-green-400 transition mb-2"
                 >
                   <FaWhatsapp className="text-lg" />
                   <span>0543 108 0766</span>
@@ -88,11 +64,11 @@ export default function Navbar() {
 
                 {/* Mail */}
                 <Link
-                  href="mailto:selcuktekinbnr@gmail.com"
-                  className="flex items-center gap-2 hover:text-red-400 transition mt-2"
+                  href="mailto:selcuktekinbr@gmail.com"
+                  className="flex items-center gap-2 hover:text-red-400 transition"
                 >
                   <FaEnvelope className="text-lg" />
-                  <span>selcuktekinbnr@gmail.com</span>
+                  <span>selcuktekinbr@gmail.com</span>
                 </Link>
               </div>
             )}

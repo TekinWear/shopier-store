@@ -8,11 +8,11 @@ import Footer from "./components/Footer";
 
 export default function HomePage() {
   return (
-    <main className="bg-black text-white">
+    <main className="bg-black text-white min-h-[120vh]">
       {/* Navbar */}
       <Navbar />
 
-      {/* Slideshow (buton burada var) */}
+      {/* Slideshow */}
       <Slideshow />
 
       {/* Hero Section */}

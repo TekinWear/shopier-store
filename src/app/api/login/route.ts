@@ -1,31 +1,54 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/mongodb";
+import clientPromise from "../../lib/mongodb";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 export async function POST(req: Request) {
   try {
-    const { email, password } = await req.json();
+    const { identifier, password } = await req.json();
 
     const client = await clientPromise;
-    const db = client.db(process.env.MONGODB_DB);
+    const db = client.db("test"); // kendi database adını yaz
     const users = db.collection("users");
 
-    const user = await users.findOne({ email });
+    // Kullanıcıyı email veya username ile bul
+    const user = await users.findOne({
+      $or: [{ email: identifier }, { username: identifier }],
+    });
+
     if (!user) {
-      return NextResponse.json({ message: "Kullanıcı bulunamadı" }, { status: 404 });
+      return NextResponse.json(
+        { message: "Kullanıcı bulunamadı" },
+        { status: 401 }
+      );
     }
 
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return NextResponse.json({ message: "Şifre hatalı" }, { status: 401 });
+    // Şifreyi kontrol et
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { message: "Hatalı şifre" },
+        { status: 401 }
+      );
     }
 
-    return NextResponse.json(
-      { message: "Giriş başarılı", user: { email: user.email, username: user.username } },
-      { status: 200 }
+    // JWT token oluştur
+    const token = jwt.sign(
+      {
+        id: user._id,
+        email: user.email,
+      },
+      process.env.JWT_SECRET || "secret",
+      { expiresIn: "1d" }
     );
+
+    return NextResponse.json({ token });
   } catch (error) {
-    console.error("Login API error:", error);
-    return NextResponse.json({ message: "Sunucu hatası" }, { status: 500 });
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { message: "Sunucu hatası" },
+      { status: 500 }
+    );
   }
 }
+
