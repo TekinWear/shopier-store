@@ -1,124 +1,148 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
-type LoginForm = {
+type SignupForm = {
   username: string;
+  email: string;
+  phone: string;
   password: string;
 };
 
-export default function LoginPage() {
-  const [form, setForm] = useState<LoginForm>({
+export default function SignupPage() {
+  const [form, setForm] = useState<SignupForm>({
     username: "",
+    email: "",
+    phone: "",
     password: "",
   });
+
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const router = useRouter();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMsg(null);
     setLoading(true);
+
     try {
-      const res = await fetch("/api/login", {
+      const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
+
       const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Kayıt başarısız ❌");
 
-      if (!res.ok) throw new Error(data?.error || "Giriş başarısız ❌");
-
-      setMsg("Giriş başarılı ✅");
-
-      // ✅ Başarılı giriş → anasayfaya yönlendir
+      setMsg("Kayıt başarılı ✅");
       setTimeout(() => {
-        router.push("/");
-      }, 2000);
+        router.push("/login");
+      }, 1500);
     } catch (err: any) {
-      setMsg(err?.message || "Bir hata oluştu ❌");
+      setMsg(err.message || "Bir hata oluştu ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[100vh] bg-animated relative">
-      {/* Grid efektli arka plan */}
-      <div className="absolute inset-0 bg-grid pointer-events-none" />
-
-      <main className="container mx-auto px-4 py-16 flex flex-col items-center">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-700 to-purple-900 px-4">
+      <div className="w-full max-w-md bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/20">
         {/* Logo */}
-        <img
-          src="/logo.png"
-          alt="TEKİN WEAR"
-          className="w-24 h-24 rounded-md shadow-lg mb-4"
-        />
-
-        {/* Marka adı */}
-        <h1 className="text-white/90 text-2xl font-bold tracking-wide mb-6">
-          TEKİN WEAR
-        </h1>
+        <div className="flex flex-col items-center mb-6">
+          <img
+            src="/logo.png"
+            alt="TEKİN WEAR"
+            className="w-20 h-20 rounded-md shadow-md"
+          />
+          <h1 className="text-white text-2xl font-bold mt-3 tracking-wide">
+            TEKİN WEAR
+          </h1>
+        </div>
 
         {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="w-full max-w-md bg-black/55 backdrop-blur-sm rounded-2xl shadow-xl p-6 space-y-4 text-white"
-        >
-          {/* Kullanıcı adı */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Kullanıcı Adı */}
           <div>
-            <label className="block mb-1 text-sm text-white/85">
+            <label className="block text-sm text-white/80 mb-1">
               Kullanıcı Adı
             </label>
             <input
-              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none 
-              focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
               type="text"
               name="username"
               value={form.username}
               onChange={handleChange}
-              placeholder="ör. tekinwear"
+              placeholder="örn. selcuk12"
               required
+              className="w-full rounded-lg bg-white/15 border border-white/20 px-3 py-2 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm text-white/80 mb-1">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              placeholder="ornek@email.com"
+              required
+              className="w-full rounded-lg bg-white/15 border border-white/20 px-3 py-2 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-purple-400"
+            />
+          </div>
+
+          {/* Telefon */}
+          <div>
+            <label className="block text-sm text-white/80 mb-1">Telefon</label>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              placeholder="05xx xxx xx xx"
+              required
+              className="w-full rounded-lg bg-white/15 border border-white/20 px-3 py-2 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
 
           {/* Şifre */}
           <div>
-            <label className="block mb-1 text-sm text-white/85">Şifre</label>
+            <label className="block text-sm text-white/80 mb-1">Şifre</label>
             <input
-              className="w-full rounded-lg bg-neutral-900 border border-white/10 px-3 py-2 outline-none 
-              focus:ring-2 focus:ring-white/20 focus:border-white/30 placeholder-white/40"
               type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
               placeholder="••••••••"
               required
+              className="w-full rounded-lg bg-white/15 border border-white/20 px-3 py-2 text-white placeholder-white/50 outline-none focus:ring-2 focus:ring-purple-400"
             />
           </div>
 
           {/* Mesaj */}
           {msg && (
-            <p className="text-center text-sm opacity-90 pt-1">{msg}</p>
+            <p className="text-center text-sm text-white mt-2">{msg}</p>
           )}
 
           {/* Buton */}
           <button
-            disabled={loading}
-            className="w-full rounded-lg bg-white text-black font-semibold py-2 disabled:opacity-60"
             type="submit"
+            disabled={loading}
+            className="w-full py-2 mt-4 bg-purple-500 hover:bg-purple-600 rounded-lg text-white font-semibold shadow-lg transition disabled:opacity-60"
           >
-            {loading ? "Gönderiliyor..." : "Giriş Yap"}
+            {loading ? "Gönderiliyor..." : "Kayıt Ol"}
           </button>
         </form>
-      </main>
+      </div>
     </div>
   );
 }
